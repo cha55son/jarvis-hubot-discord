@@ -1,2 +1,11 @@
 export HUBOT_DISCORD_EMAIL="..."
 export HUBOT_DISCORD_PASSWORD="..."
+
+# Configure any AWS access
+export AWS_REGION="..."
+export AWS_ACCESS_KEY_ID="..."
+export AWS_SECRET_ACCESS_KEY="..."
+
+export SE_INSTANCE_ID="..."
+export SE_EXPIRATION_SECONDS="..."
+export SE_EXPIRATION_NOTIF_SECONDS="..."
