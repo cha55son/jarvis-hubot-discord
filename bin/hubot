@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+SCRIPTPATH=$( cd "$(dirname "$0")" ; pwd -P )
+. $SCRIPTPATH/../config.sh
+
+npm install
+export PATH="node_modules/.bin:node_modules/hubot/node_modules/.bin:$PATH"
+
+exec node_modules/.bin/hubot --name "jarvis" -a discord "$@"

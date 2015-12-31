@@ -1,0 +1,2 @@
+export HUBOT_DISCORD_EMAIL="..."
+export HUBOT_DISCORD_PASSWORD="..."
