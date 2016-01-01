@@ -17,8 +17,60 @@
 #
 # Author:
 #   cha55son
+Helper = require './space-engineers-helpers'
 
+checkStatus = (inst, status, action) ->
+    if (inst.State.Name != status)
+        throw "**Warning!** The Space Engineers server is not #{status} therefore i'm refusing to #{action} it."
+    inst # Pass inst to the next .then
+warnText = '**Warning!** '
 
 module.exports = (robot) ->
-    robot.respond /.*/, (msg) ->
-        msg.send "Message received! Sorry, but i'm currently under construction."
+    robot.respond /se status/, (msg) ->
+        Helper.getInstance().then( (inst) ->
+            msg.send "The Space Engineers server is currently **#{inst.State.Name}**"
+        ).catch (err) ->
+            console.error err
+            msg.send warnText + err
+
+    robot.respond /se start/, (msg) ->
+        Helper.getInstance().then( (inst) ->
+            checkStatus inst, 'stopped', 'start'
+        ).then( (inst) ->
+            # Boot the server
+            msg.send "Starting the Space Engineers server! Waiting on the server status..."
+            Helper.startInstance().then (data) ->
+                inst # Ensure inst gets sent to the next .then
+        ).then( (inst) ->
+            # Poll until the server is started
+            Helper.pollInstance('running').then (inst) ->
+                msg.send "The server was started!"
+        ).catch (err) ->
+            console.error err
+            msg.send warnText + err
+
+    robot.respond /se stop/, (msg) ->
+        Helper.getInstance().then( (inst) ->
+            checkStatus inst, 'running', 'stop'
+        ).then( (inst) ->
+            # Stop the server
+            msg.send "Stopping the Space Engineers server! Waiting on the server status..."
+            Helper.stopInstance().then (data) ->
+                inst # Ensure inst gets sent to the next .then
+        ).then( (inst) ->
+            # Poll until the server is stopped
+            Helper.pollInstance('stopped').then (inst) ->
+                msg.send "The server was stopped!"
+        ).catch (err) ->
+            console.error err
+            msg.send warnText + err
+
+    robot.respond /se renew/, (msg) ->
+        Helper.getInstance().then( (inst) ->
+            checkStatus inst, 'running', 'renew'
+        ).then( (inst) ->
+            # renew the expiration period
+            msg.send "Renewing the server!"
+        ).catch (err) ->
+            console.error err
+            msg.send warnText + err
