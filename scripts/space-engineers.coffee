@@ -18,11 +18,11 @@
 # Author:
 #   cha55son
 
+warnText = '**Warning!** '
 checkStatus = (inst, status, action) ->
     if inst.State.Name != status
-        throw "**Warning!** The Space Engineers server is not #{status} therefore i'm refusing to #{action} it."
+        throw "The Space Engineers server is not #{status} therefore i'm refusing to #{action} it."
     inst # Pass inst to the next .then
-warnText = '**Warning!** '
 
 module.exports = (robot) ->
     Helper = require('../lib/space-engineers-helpers')(robot)
@@ -73,7 +73,8 @@ module.exports = (robot) ->
             checkStatus inst, 'running', 'renew'
         .then (inst) ->
             # renew the expiration period
-            msg.send "Renewing the server!"
+            Helper.renewInstance(msg.message.room)
+            msg.send "The Space Engineers server was renewed!"
         .catch (err) ->
             console.error err
             msg.send warnText + err

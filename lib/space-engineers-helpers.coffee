@@ -62,7 +62,7 @@ pollInstance = (expectedStatus) ->
                                     "to reach the #{expectedStatus} status."
                 timeout -= 1
                 getInstance().then (inst) ->
-                    ROBOT.logger.debug "Polling #{timeout}: Found status '#{inst.State.Name}'."
+                    ROBOT.logger.debug "se.pollInstance: #{timeout} - Found status '#{inst.State.Name}'."
                     if inst.State.Name == expectedStatus
                         return resolve inst
                     # Didn't have the status we wanted. Run another poll.
@@ -81,7 +81,6 @@ brainPoll = ->
         notifTimestamp = data.timestamp - SE_EXP_SEC_NOTIF
         # If the value is invalid run another poll
         if !data.timestamp
-            ROBOT.logger.debug "se.brainPoll: Invalid timestamp, skipping."
             brainPoll()
         # Are we near the notification period?
         # If so, send a notification to the room.
@@ -91,8 +90,8 @@ brainPoll = ->
             ROBOT.logger.debug "se.brainPoll: Notification timestamp #{notifTimestamp}."
             ROBOT.logger.debug "se.brainPoll: Expiration timestamp #{data.timestamp}."
             ROBOT.messageRoom data.room, "**Warning!** The Space Engineers server will " +
-                                         "shutdown in #{(data.timestamp - curTimestamp) / 60} minutes."
-            ROBOT.messageRoom data.room, "Run `#{ROBOT.name} se renew` to reset the expiration."
+                                         "shutdown in #{parseInt((data.timestamp - curTimestamp) / 60)} minutes."
+            ROBOT.messageRoom data.room, "Run `#{ROBOT.name} se renew` to reset the expiration period."
             brainPoll()
         # Are we past the date already? If so check the server
         # and kill it if it is running.
@@ -105,7 +104,7 @@ brainPoll = ->
                     brainPoll()
                     return
                 # Check for 'running' in case it's in between states
-                ROBOT.logger.info "Found server running after expiration date. Shutting down."
+                ROBOT.logger.info "se.brainPoll: Found server running after expiration date. Shutting down."
                 ROBOT.messageRoom data.room, "Stopping the Space Engineers server! Waiting on the server status..."
                 stopInstance().then (inst) ->
                     # Poll until the server is stopped
