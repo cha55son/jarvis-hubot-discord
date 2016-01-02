@@ -1,3 +1,4 @@
+export HUBOT_LOG_LEVEL="info"
 export HUBOT_DISCORD_EMAIL="..."
 export HUBOT_DISCORD_PASSWORD="..."
 
